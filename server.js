@@ -15,7 +15,8 @@ import connectDB from "./config/db.js";
 
 import swaggerRoutes from "./routes/swaggerRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-
+import venueRoutes from "./routes/venueRoutes.js";
+import organizerRoutes from "./routes/organizerRoutes.js";
 
 // Connect Database
 await connectDB();
@@ -111,8 +112,8 @@ app.get("/", (req, res) => {
 // Protected  API Routes
 // =======================
 app.use("/api/auth", authRoutes);
-
-
+app.use("/api/venues", venueRoutes);
+app.use("/api/organizers", organizerRoutes);
 
 // 404 Route
 app.use((req, res) => {
