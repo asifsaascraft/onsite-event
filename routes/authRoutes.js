@@ -6,10 +6,11 @@ import {
   refreshToken,
   logout,
   getMe,
+  updateProfile,
   forgotPassword,
   resetPassword,
 } from "../controllers/authController.js";
-
+import createUploader from "../middlewares/upload.js";
 import protect from "../middlewares/protect.js";
 import authorize from "../middlewares/authorize.js";
 import validate from "../middlewares/validate.js";
@@ -17,6 +18,7 @@ import validate from "../middlewares/validate.js";
 import {
   registerAdminValidator,
   loginValidator,
+  updateProfileValidator,
   forgotPasswordValidator,
   resetPasswordValidator,
 } from "../validators/authValidator.js";
@@ -24,10 +26,12 @@ import {
 const router =
   express.Router();
 
+const uploadProfileImage =
+  createUploader("profile-images");
+
 // ==========================================
 // Bootstrap Admin Registration
 // ==========================================
-
 router.post(
   "/register",
   registerAdminValidator,
@@ -38,7 +42,6 @@ router.post(
 // ==========================================
 // Login
 // ==========================================
-
 router.post(
   "/login",
   loginValidator,
@@ -49,7 +52,6 @@ router.post(
 // ==========================================
 // Refresh Token
 // ==========================================
-
 router.post(
   "/refresh",
   refreshToken,
@@ -58,7 +60,6 @@ router.post(
 // ==========================================
 // Logout
 // ==========================================
-
 router.post(
   "/logout",
   logout,
@@ -67,7 +68,6 @@ router.post(
 // ==========================================
 // Current Admin
 // ==========================================
-
 router.get(
   "/me",
   protect,
@@ -76,9 +76,20 @@ router.get(
 );
 
 // ==========================================
+// Update Admin Profile
+// ==========================================
+router.patch(
+  "/profile",
+  protect,
+  authorize("admin"),
+  validate,
+  uploadProfileImage.single("profileImage"),
+  updateProfile,
+);
+
+// ==========================================
 // Forgot Password
 // ==========================================
-
 router.post(
   "/forgot-password",
   forgotPasswordValidator,
@@ -89,7 +100,6 @@ router.post(
 // ==========================================
 // Reset Password
 // ==========================================
-
 router.post(
   "/reset-password",
   resetPasswordValidator,

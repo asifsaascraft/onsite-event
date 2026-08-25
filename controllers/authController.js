@@ -16,9 +16,8 @@ import {
 import generateTokens from "../utils/generateTokens.js";
 import generateRandomToken from "../utils/generateRandomToken.js";
 import hashToken from "../utils/hashToken.js";
-
 import sendEmail from "../utils/sendEmail.js";
-
+import deleteS3Object from "../utils/deleteS3Object.js";
 // ==========================================
 // Register Admin
 // ==========================================
@@ -372,6 +371,77 @@ export const getMe = asyncHandler(async (req, res) => {
 });
 
 // ==========================================
+// Update Admin Profile
+// ==========================================
+
+export const updateProfile = asyncHandler(async (req, res) => {
+  const { fullName, mobile } = req.body;
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new AppError("User account no longer exists.", 404);
+  }
+
+  // ==========================================
+  // Update Full Name
+  // ==========================================
+
+  if (fullName !== undefined) {
+    user.fullName = fullName.trim();
+  }
+
+  // ==========================================
+  // Update Mobile
+  // ==========================================
+
+  if (mobile !== undefined) {
+    const existingMobile = await User.findOne({
+      mobile,
+      _id: {
+        $ne: user._id,
+      },
+    });
+
+    if (existingMobile) {
+      throw new AppError("Mobile number is already registered.", 409);
+    }
+
+    user.mobile = mobile;
+  }
+
+  // ==========================================
+  // Update Profile Image
+  // ==========================================
+
+  if (req.file) {
+    const oldProfileImage = user.profileImage;
+
+    user.profileImage = req.file.location;
+
+    // Delete old image from S3
+    if (oldProfileImage) {
+      await deleteS3Object(oldProfileImage);
+    }
+  }
+
+  // ==========================================
+  // Save
+  // ==========================================
+
+  await user.save();
+
+  // ==========================================
+  // Response
+  // ==========================================
+
+  return successResponse(res, {
+    message: "Profile updated successfully.",
+    data: user,
+  });
+});
+
+// ==========================================
 // Forgot Password
 // ==========================================
 
@@ -477,4 +547,3 @@ export const resetPassword = asyncHandler(async (req, res) => {
     data: null,
   });
 });
-

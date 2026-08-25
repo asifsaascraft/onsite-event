@@ -58,6 +58,11 @@ const UserSchema = new mongoose.Schema(
       index: true,
     },
 
+    profileImage: {
+      type: String,
+      default: null,
+    },
+
     lastLoginAt: {
       type: Date,
       default: null,
@@ -121,9 +126,7 @@ UserSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     return false;
   }
 
-  const changedTimestamp = Math.floor(
-    this.passwordChangedAt.getTime() / 1000,
-  );
+  const changedTimestamp = Math.floor(this.passwordChangedAt.getTime() / 1000);
 
   return JWTTimestamp < changedTimestamp;
 };
@@ -136,12 +139,9 @@ UserSchema.set("toJSON", {
   virtuals: true,
 
   transform(doc, ret) {
-    [
-      "password",
-      "passwordResetToken",
-      "passwordResetExpires",
-      "__v",
-    ].forEach((field) => delete ret[field]);
+    ["password", "passwordResetToken", "passwordResetExpires", "__v"].forEach(
+      (field) => delete ret[field],
+    );
 
     return ret;
   },
@@ -172,8 +172,6 @@ UserSchema.index(
 // Export
 // ==========================================
 
-const User =
-  mongoose.models.User ||
-  mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 export default User;

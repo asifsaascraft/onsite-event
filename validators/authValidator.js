@@ -5,7 +5,6 @@ import {
 // ==========================================
 // Admin Register
 // ==========================================
-
 export const registerAdminValidator = [
   body("fullName")
     .trim()
@@ -58,7 +57,6 @@ export const registerAdminValidator = [
 // ==========================================
 // Login
 // ==========================================
-
 export const loginValidator = [
   body("email")
     .trim()
@@ -80,9 +78,32 @@ export const loginValidator = [
 ];
 
 // ==========================================
+// Update Profile
+// ==========================================
+export const updateProfileValidator = [
+  body("fullName")
+    .optional()
+    .trim()
+    .isLength({
+      min: 2,
+      max: 100,
+    })
+    .withMessage(
+      "Full name must be between 2 and 100 characters.",
+    ),
+
+  body("mobile")
+    .optional()
+    .trim()
+    .matches(/^[6-9]\d{9}$/)
+    .withMessage(
+      "Please enter a valid mobile number.",
+    ),
+];
+
+// ==========================================
 // Forgot Password
 // ==========================================
-
 export const forgotPasswordValidator = [
   body("email")
     .trim()
@@ -100,7 +121,6 @@ export const forgotPasswordValidator = [
 // ==========================================
 // Reset Password
 // ==========================================
-
 export const resetPasswordValidator = [
   body("token")
     .trim()

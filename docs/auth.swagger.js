@@ -132,18 +132,15 @@ const authPaths = {
 
       responses: {
         200: {
-          description:
-            "Access token refreshed successfully.",
+          description: "Access token refreshed successfully.",
 
           content: {
             "application/json": {
               example: {
                 success: true,
-                message:
-                  "Access token refreshed successfully.",
+                message: "Access token refreshed successfully.",
                 data: {
-                  accessToken:
-                    "eyJhbGciOiJIUzI1NiIs...",
+                  accessToken: "eyJhbGciOiJIUzI1NiIs...",
                   tokenType: "Bearer",
                   expiresIn: "1d",
                 },
@@ -204,8 +201,7 @@ const authPaths = {
 
       summary: "Get Current Admin",
 
-      description:
-        "Get the currently authenticated admin profile.",
+      description: "Get the currently authenticated admin profile.",
 
       security: [
         {
@@ -215,15 +211,13 @@ const authPaths = {
 
       responses: {
         200: {
-          description:
-            "Admin profile fetched successfully.",
+          description: "Admin profile fetched successfully.",
 
           content: {
             "application/json": {
               example: {
                 success: true,
-                message:
-                  "Admin profile fetched successfully.",
+                message: "Admin profile fetched successfully.",
                 data: {
                   _id: "6852b4d04ef5f2e4dbd0d001",
                   fullName: "Admin",
@@ -231,12 +225,9 @@ const authPaths = {
                   mobile: "9876543210",
                   role: "admin",
                   status: "active",
-                  lastLoginAt:
-                    "2026-08-24T10:00:00.000Z",
-                  createdAt:
-                    "2026-08-24T09:00:00.000Z",
-                  updatedAt:
-                    "2026-08-24T10:00:00.000Z",
+                  lastLoginAt: "2026-08-24T10:00:00.000Z",
+                  createdAt: "2026-08-24T09:00:00.000Z",
+                  updatedAt: "2026-08-24T10:00:00.000Z",
                 },
               },
             },
@@ -253,6 +244,91 @@ const authPaths = {
   },
 
   // ==========================================
+  // Update Admin Profile
+  // ==========================================
+
+  "/auth/profile": {
+    patch: {
+      tags: ["Authentication"],
+
+      summary: "Update Admin Profile",
+
+      description:
+        "Update the authenticated admin profile including full name, mobile number and profile image.",
+
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
+
+      requestBody: {
+        required: false,
+
+        content: {
+          "multipart/form-data": {
+            schema: {
+              type: "object",
+
+              properties: {
+                fullName: {
+                  type: "string",
+                  example: "Admin",
+                },
+
+                mobile: {
+                  type: "string",
+                  example: "9876543210",
+                },
+
+                profileImage: {
+                  type: "string",
+                  format: "binary",
+                },
+              },
+            },
+          },
+        },
+      },
+
+      responses: {
+        200: {
+          description: "Profile updated successfully.",
+
+          content: {
+            "application/json": {
+              example: {
+                success: true,
+                message: "Profile updated successfully.",
+                data: {
+                  _id: "6852b4d04ef5f2e4dbd0d001",
+                  fullName: "Admin",
+                  email: "admin@example.com",
+                  mobile: "9876543210",
+                  profileImage:
+                    "https://your-bucket.s3.amazonaws.com/profile-images/123456.jpg",
+                  role: "admin",
+                  status: "active",
+                },
+              },
+            },
+          },
+        },
+
+        401: unauthorized401,
+
+        403: forbidden403,
+
+        409: conflict409,
+
+        422: validation422,
+
+        500: internalServer500,
+      },
+    },
+  },
+
+  // ==========================================
   // Forgot Password
   // ==========================================
 
@@ -262,8 +338,7 @@ const authPaths = {
 
       summary: "Forgot Password",
 
-      description:
-        "Send a password reset link to the admin email address.",
+      description: "Send a password reset link to the admin email address.",
 
       requestBody: {
         required: true,
@@ -279,8 +354,7 @@ const authPaths = {
 
       responses: {
         200: {
-          description:
-            "Password reset request completed.",
+          description: "Password reset request completed.",
 
           content: {
             "application/json": {
@@ -311,8 +385,7 @@ const authPaths = {
 
       summary: "Reset Password",
 
-      description:
-        "Reset the admin password using the password reset token.",
+      description: "Reset the admin password using the password reset token.",
 
       requestBody: {
         required: true,
@@ -320,8 +393,7 @@ const authPaths = {
         content: {
           "application/json": {
             example: {
-              token:
-                "8e2a5c8f5d7c...",
+              token: "8e2a5c8f5d7c...",
               password: "NewPassword@123",
             },
           },
@@ -330,15 +402,13 @@ const authPaths = {
 
       responses: {
         200: {
-          description:
-            "Password reset successfully.",
+          description: "Password reset successfully.",
 
           content: {
             "application/json": {
               example: {
                 success: true,
-                message:
-                  "Password reset successfully. Please login again.",
+                message: "Password reset successfully. Please login again.",
                 data: null,
               },
             },

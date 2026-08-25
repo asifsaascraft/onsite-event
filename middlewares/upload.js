@@ -41,7 +41,7 @@ const createUploader = (folder) => {
         "image/jpg",
         "image/png",
         "image/webp",
-        "image/svg",
+        "image/svg+xml",
       ];
 
       if (!allowedTypes.includes(file.mimetype)) {
