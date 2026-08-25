@@ -82,8 +82,9 @@ router.patch(
   "/profile",
   protect,
   authorize("admin"),
-  validate,
   uploadProfileImage.single("profileImage"),
+  updateProfileValidator,
+  validate,
   updateProfile,
 );
 
