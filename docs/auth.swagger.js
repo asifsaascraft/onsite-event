@@ -117,6 +117,76 @@ const authPaths = {
     },
   },
 
+    // ==========================================
+  // Operator Login
+  // ==========================================
+
+  "/auth/operator-login": {
+    post: {
+      tags: ["Authentication"],
+
+      summary: "Operator Login",
+
+      description:
+        "Login as an event operator using the operator login code. The operator receives an access token that is valid only until the event end date.",
+
+      requestBody: {
+        required: true,
+
+        content: {
+          "application/json": {
+            schema: {
+              $ref: "#/components/schemas/OperatorLoginRequest",
+            },
+
+            example: {
+              operatorLoginCode: "EXPO2026-OP01",
+            },
+          },
+        },
+      },
+
+      responses: {
+        200: {
+          description: "Operator login successful.",
+
+          content: {
+            "application/json": {
+              example: {
+                success: true,
+                message: "Operator login successful.",
+
+                data: {
+                  event: {
+                    _id: "6852b4d04ef5f2e4dbd0d004",
+                    eventName: "International Expo 2026",
+                    eventShortName: "EXPO2026",
+                    startDate: "2026-09-10T00:00:00.000Z",
+                    endDate: "2026-09-12T23:59:59.000Z",
+                  },
+
+                  accessToken: "eyJhbGciOiJIUzI1NiIs...",
+
+                  tokenType: "Bearer",
+
+                  expiresIn: 259200,
+                },
+              },
+            },
+          },
+        },
+
+        401: unauthorized401,
+
+        403: forbidden403,
+
+        422: validation422,
+
+        500: internalServer500,
+      },
+    },
+  },
+
   // ==========================================
   // Refresh Token
   // ==========================================

@@ -18,7 +18,7 @@ import authRoutes from "./routes/authRoutes.js";
 import venueRoutes from "./routes/venueRoutes.js";
 import organizerRoutes from "./routes/organizerRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
-
+import regDataTypeRoutes from "./routes/regDataTypeRoutes.js";
 
 // Connect Database
 await connectDB();
@@ -117,7 +117,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/venues", venueRoutes);
 app.use("/api/organizers", organizerRoutes);
 app.use("/api/events", eventRoutes);
-
+app.use("/api", regDataTypeRoutes);
 
 // 404 Route
 app.use((req, res) => {

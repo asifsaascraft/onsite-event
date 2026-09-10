@@ -76,11 +76,7 @@ export const schemas = {
   RegisterAdminRequest: {
     type: "object",
 
-    required: [
-      "fullName",
-      "email",
-      "password",
-    ],
+    required: ["fullName", "email", "password"],
 
     properties: {
       fullName: {
@@ -114,10 +110,7 @@ export const schemas = {
   LoginRequest: {
     type: "object",
 
-    required: [
-      "email",
-      "password",
-    ],
+    required: ["email", "password"],
 
     properties: {
       email: {
@@ -135,6 +128,23 @@ export const schemas = {
   },
 
   // ==========================================
+  // Operator Login Request
+  // ==========================================
+
+  OperatorLoginRequest: {
+    type: "object",
+
+    required: ["operatorLoginCode"],
+
+    properties: {
+      operatorLoginCode: {
+        type: "string",
+        example: "EXPO2026-OP01",
+      },
+    },
+  },
+
+  // ==========================================
   // Token Response
   // ==========================================
 
@@ -144,8 +154,7 @@ export const schemas = {
     properties: {
       accessToken: {
         type: "string",
-        example:
-          "eyJhbGciOiJIUzI1NiIs...",
+        example: "eyJhbGciOiJIUzI1NiIs...",
       },
 
       tokenType: {
@@ -185,16 +194,12 @@ export const schemas = {
   ResetPasswordRequest: {
     type: "object",
 
-    required: [
-      "token",
-      "password",
-    ],
+    required: ["token", "password"],
 
     properties: {
       token: {
         type: "string",
-        example:
-          "8e2a5c8f5d7c1234567890abcdef",
+        example: "8e2a5c8f5d7c1234567890abcdef",
       },
 
       password: {
@@ -240,26 +245,22 @@ export const schemas = {
 
       address: {
         type: "string",
-        example:
-          "Knowledge Park II, Greater Noida, Uttar Pradesh",
+        example: "Knowledge Park II, Greater Noida, Uttar Pradesh",
       },
 
       website: {
         type: "string",
-        example:
-          "https://www.example.com",
+        example: "https://www.example.com",
       },
 
       mapLink: {
         type: "string",
-        example:
-          "https://maps.google.com/example",
+        example: "https://maps.google.com/example",
       },
 
       uploadVenuePhoto: {
         type: "string",
-        example:
-          "https://your-bucket.s3.amazonaws.com/venue-photos/venue.jpg",
+        example: "https://your-bucket.s3.amazonaws.com/venue-photos/venue.jpg",
       },
 
       createdAt: {
@@ -384,11 +385,7 @@ export const schemas = {
 
       dynamicStatus: {
         type: "string",
-        enum: [
-          "Upcoming",
-          "Live",
-          "Past",
-        ],
+        enum: ["Upcoming", "Live", "Past"],
         nullable: true,
         example: "Upcoming",
       },

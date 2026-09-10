@@ -14,6 +14,10 @@ export const loginExample = {
   password: "Admin@123",
 };
 
+export const operatorLoginExample = {
+  operatorLoginCode: "EXPO2026-OP01",
+};
+
 export const forgotPasswordExample = {
   email: "admin@example.com",
 };

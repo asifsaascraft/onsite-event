@@ -3,6 +3,7 @@ import express from "express";
 import {
   registerAdmin,
   login,
+  operatorLogin,
   refreshToken,
   logout,
   getMe,
@@ -14,7 +15,9 @@ import createUploader from "../middlewares/upload.js";
 import protect from "../middlewares/protect.js";
 import authorize from "../middlewares/authorize.js";
 import validate from "../middlewares/validate.js";
-
+import {
+  operatorLoginValidator,
+} from "../validators/operatorValidator.js";
 import {
   registerAdminValidator,
   loginValidator,
@@ -47,6 +50,16 @@ router.post(
   loginValidator,
   validate,
   login,
+);
+
+// ==========================================
+// Operator Login
+// ==========================================
+router.post(
+  "/operator-login",
+  operatorLoginValidator,
+  validate,
+  operatorLogin,
 );
 
 // ==========================================

@@ -1,18 +1,14 @@
 import jwt from "jsonwebtoken";
-
+import Event from "../models/Event.js";
 import User from "../models/User.js";
 import UserSession from "../models/UserSession.js";
-
 import asyncHandler from "../utils/asyncHandler.js";
 import AppError from "../utils/appError.js";
-
 import { successResponse } from "../utils/response.js";
-
 import {
   setRefreshTokenCookie,
   clearRefreshTokenCookie,
 } from "../utils/cookies.js";
-
 import generateTokens from "../utils/generateTokens.js";
 import generateRandomToken from "../utils/generateRandomToken.js";
 import hashToken from "../utils/hashToken.js";
@@ -199,9 +195,88 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 // ==========================================
+// Operator Login
+// ==========================================
+export const operatorLogin = asyncHandler(async (req, res) => {
+  const { operatorLoginCode } = req.body;
+
+  // ==========================================
+  // Find Event
+  // ==========================================
+
+  const event = await Event.findOne({
+    operatorLoginCode: operatorLoginCode.trim(),
+  });
+
+  if (!event) {
+    throw new AppError("Invalid operator login code.", 401);
+  }
+
+  // ==========================================
+  // Calculate Token Expiry
+  // ==========================================
+
+  const now = new Date();
+
+  if (now > event.endDate) {
+    throw new AppError(
+      "Operator login is no longer available because the event has ended.",
+      403,
+    );
+  }
+
+  const expiresInSeconds = Math.floor(
+    (event.endDate.getTime() - now.getTime()) / 1000,
+  );
+
+  if (expiresInSeconds <= 0) {
+    throw new AppError(
+      "Operator login is no longer available because the event has ended.",
+      403,
+    );
+  }
+
+  // ==========================================
+  // Generate Operator Token
+  // ==========================================
+
+  const accessToken = jwt.sign(
+    {
+      eventId: event._id.toString(),
+      operatorLoginCode: event.operatorLoginCode,
+      role: "operator",
+      tokenType: "access",
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: expiresInSeconds,
+    },
+  );
+
+  // ==========================================
+  // Response
+  // ==========================================
+
+  return successResponse(res, {
+    message: "Operator login successful.",
+    data: {
+      event: {
+        _id: event._id,
+        eventName: event.eventName,
+        eventShortName: event.eventShortName,
+        startDate: event.startDate,
+        endDate: event.endDate,
+      },
+      accessToken,
+      tokenType: "Bearer",
+      expiresIn: expiresInSeconds,
+    },
+  });
+});
+
+// ==========================================
 // Refresh Access Token
 // ==========================================
-
 export const refreshToken = asyncHandler(async (req, res) => {
   const token = req.cookies.refreshToken;
 
