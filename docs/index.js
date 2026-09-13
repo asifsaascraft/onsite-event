@@ -5,6 +5,7 @@ import eventPaths from "./event.swagger.js";
 import regDataTypePaths from "./regDataType.swagger.js";
 import groupCategoryPaths from "./groupCategory.swagger.js";
 import categoryPaths from "./category.swagger.js";
+import privilegePaths from "./privilege.swagger.js";
 
 const paths = {
   ...authPaths,
@@ -14,6 +15,7 @@ const paths = {
   ...regDataTypePaths,
   ...groupCategoryPaths,
   ...categoryPaths,
+  ...privilegePaths,
 };
 
 export default paths;

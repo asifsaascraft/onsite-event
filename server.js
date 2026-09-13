@@ -21,6 +21,7 @@ import eventRoutes from "./routes/eventRoutes.js";
 import regDataTypeRoutes from "./routes/regDataTypeRoutes.js";
 import groupCategoryRoutes from "./routes/groupCategoryRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import privilegeRoutes from "./routes/privilegeRoutes.js";
 
 // Connect Database
 await connectDB();
@@ -122,7 +123,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api", regDataTypeRoutes);
 app.use("/api", groupCategoryRoutes);
 app.use("/api", categoryRoutes);
-
+app.use("/api", privilegeRoutes);
 
 // 404 Route
 app.use((req, res) => {
