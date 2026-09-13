@@ -19,6 +19,8 @@ import venueRoutes from "./routes/venueRoutes.js";
 import organizerRoutes from "./routes/organizerRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
 import regDataTypeRoutes from "./routes/regDataTypeRoutes.js";
+import groupCategoryRoutes from "./routes/groupCategoryRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
 // Connect Database
 await connectDB();
@@ -118,6 +120,9 @@ app.use("/api/venues", venueRoutes);
 app.use("/api/organizers", organizerRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api", regDataTypeRoutes);
+app.use("/api", groupCategoryRoutes);
+app.use("/api", categoryRoutes);
+
 
 // 404 Route
 app.use((req, res) => {
