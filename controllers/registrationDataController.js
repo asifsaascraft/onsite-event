@@ -1,15 +1,12 @@
 import mongoose from "mongoose";
-
+import XLSX from "xlsx";
 import RegistrationData from "../models/RegistrationData.js";
 import RegDataType from "../models/RegDataType.js";
 import Event from "../models/Event.js";
-
 import asyncHandler from "../utils/asyncHandler.js";
 import AppError from "../utils/appError.js";
 import { successResponse } from "../utils/response.js";
-
 import { getPagination, buildPaginationMeta } from "../utils/pagination.js";
-
 import buildSearchQuery from "../utils/search.js";
 import buildSortQuery from "../utils/sort.js";
 
@@ -505,3 +502,330 @@ export const deleteRegistrationData = asyncHandler(async (req, res) => {
     data: null,
   });
 });
+
+
+// ==========================================
+// Delete All RegistrationData
+// ==========================================
+export const deleteAllRegistrationData =
+  asyncHandler(async (req, res) => {
+    const { eventId } = req.params;
+
+    // ==========================================
+    // Validate Event ID
+    // ==========================================
+
+    if (
+      !mongoose.Types.ObjectId.isValid(
+        eventId,
+      )
+    ) {
+      throw new AppError(
+        "Invalid event ID.",
+        400,
+      );
+    }
+
+    // ==========================================
+    // Check Event
+    // ==========================================
+
+    const event =
+      await Event.findById(eventId);
+
+    if (!event) {
+      throw new AppError(
+        "Event not found.",
+        404,
+      );
+    }
+
+    // ==========================================
+    // Delete All RegistrationData
+    // ==========================================
+
+    const result =
+      await RegistrationData.deleteMany({
+        eventId,
+      });
+
+    return successResponse(res, {
+      message:
+        "All registration data deleted successfully.",
+      data: {
+        deletedCount:
+          result.deletedCount,
+      },
+    });
+  });
+
+
+  // ==========================================
+// Import RegistrationData
+// ==========================================
+export const importRegistrationData =
+  asyncHandler(async (req, res) => {
+    const { eventId } = req.params;
+
+    const { regDataTypeId } = req.body;
+
+    // ==========================================
+    // Validate Event ID
+    // ==========================================
+
+    if (
+      !mongoose.Types.ObjectId.isValid(
+        eventId,
+      )
+    ) {
+      throw new AppError(
+        "Invalid event ID.",
+        400,
+      );
+    }
+
+    // ==========================================
+    // Validate RegDataType ID
+    // ==========================================
+
+    if (
+      !regDataTypeId ||
+      !mongoose.Types.ObjectId.isValid(
+        regDataTypeId,
+      )
+    ) {
+      throw new AppError(
+        "Valid reg data type ID is required.",
+        400,
+      );
+    }
+
+    // ==========================================
+    // Check Event
+    // ==========================================
+
+    const event =
+      await Event.findById(eventId);
+
+    if (!event) {
+      throw new AppError(
+        "Event not found.",
+        404,
+      );
+    }
+
+    // ==========================================
+    // Check RegDataType
+    // ==========================================
+
+    const regDataType =
+      await RegDataType.findOne({
+        _id: regDataTypeId,
+        eventId,
+      });
+
+    if (!regDataType) {
+      throw new AppError(
+        "Reg data type not found in this event.",
+        404,
+      );
+    }
+
+    // ==========================================
+    // Check File
+    // ==========================================
+
+    if (!req.file) {
+      throw new AppError(
+        "CSV or Excel file is required.",
+        400,
+      );
+    }
+
+    // ==========================================
+    // Read File
+    // ==========================================
+
+    const workbook = XLSX.read(
+      req.file.buffer,
+      {
+        type: "buffer",
+      },
+    );
+
+    if (!workbook.SheetNames.length) {
+      throw new AppError(
+        "The uploaded file does not contain any sheet.",
+        400,
+      );
+    }
+
+    const sheetName =
+      workbook.SheetNames[0];
+
+    const worksheet =
+      workbook.Sheets[sheetName];
+
+    const rows =
+      XLSX.utils.sheet_to_json(
+        worksheet,
+        {
+          defval: "",
+        },
+      );
+
+    // ==========================================
+    // Check Empty File
+    // ==========================================
+
+    if (!rows.length) {
+      throw new AppError(
+        "The uploaded file is empty.",
+        400,
+      );
+    }
+
+    // ==========================================
+    // Prepare RegistrationData
+    // ==========================================
+
+    const registrationDataList = [];
+
+    for (
+      let i = 0;
+      i < rows.length;
+      i++
+    ) {
+      const row = rows[i];
+
+      const name =
+        String(row.name || "").trim();
+
+      const regNum =
+        String(row.regNum || "").trim();
+
+      // ==========================================
+      // Required Fields
+      // ==========================================
+
+      if (!name) {
+        throw new AppError(
+          `Name is required at row ${i + 2}.`,
+          400,
+        );
+      }
+
+      if (!regNum) {
+        throw new AppError(
+          `Registration number is required at row ${i + 2}.`,
+          400,
+        );
+      }
+
+      // ==========================================
+      // Prepare Data
+      // ==========================================
+
+      registrationDataList.push({
+        eventId,
+        regDataTypeId,
+        name,
+        regNum,
+
+        email:
+          String(row.email || "").trim() ||
+          undefined,
+
+        mobile:
+          String(row.mobile || "").trim() ||
+          undefined,
+
+        mciNumber:
+          String(row.mciNumber || "").trim() ||
+          undefined,
+
+        address:
+          String(row.address || "").trim() ||
+          undefined,
+
+        city:
+          String(row.city || "").trim() ||
+          undefined,
+
+        state:
+          String(row.state || "").trim() ||
+          undefined,
+
+        country:
+          String(row.country || "").trim() ||
+          undefined,
+
+        reference:
+          String(row.reference || "").trim() ||
+          undefined,
+
+        note:
+          String(row.note || "").trim() ||
+          undefined,
+      });
+    }
+
+    // ==========================================
+    // Check Duplicate RegNum Inside File
+    // ==========================================
+
+    const regNums = registrationDataList.map(
+      (item) => item.regNum,
+    );
+
+    const uniqueRegNums =
+      new Set(regNums);
+
+    if (
+      uniqueRegNums.size !==
+      regNums.length
+    ) {
+      throw new AppError(
+        "Duplicate registration number found in the uploaded file.",
+        409,
+      );
+    }
+
+    // ==========================================
+    // Check Existing RegNum
+    // ==========================================
+
+    const existingRegistrationData =
+      await RegistrationData.findOne({
+        eventId,
+        regNum: {
+          $in: regNums,
+        },
+      }).select("regNum");
+
+    if (existingRegistrationData) {
+      throw new AppError(
+        `Registration number ${existingRegistrationData.regNum} already exists in this event.`,
+        409,
+      );
+    }
+
+    // ==========================================
+    // Import Data
+    // ==========================================
+
+    const importedData =
+      await RegistrationData.insertMany(
+        registrationDataList,
+      );
+
+    return successResponse(res, {
+      statusCode: 201,
+      message:
+        "Registration data imported successfully.",
+      data: {
+        importedCount:
+          importedData.length,
+      },
+    });
+  });

@@ -5,6 +5,8 @@ import {
   getRegistrationDataById,
   updateRegistrationData,
   deleteRegistrationData,
+  deleteAllRegistrationData,
+  importRegistrationData,
 } from "../controllers/registrationDataController.js";
 import protect from "../middlewares/protect.js";
 import authorizeEvent from "../middlewares/authorizeEvent.js";
@@ -13,7 +15,7 @@ import {
   createRegistrationDataValidator,
   updateRegistrationDataValidator,
 } from "../validators/registrationDataValidator.js";
-
+import uploadRegistrationData from "../middlewares/uploadRegistrationData.js";
 const router = express.Router();
 
 // ==========================================
@@ -37,6 +39,30 @@ router.get(
   authorizeEvent,
   getRegistrationData,
 );
+
+
+// ==========================================
+// Import RegistrationData
+// ==========================================
+router.post(
+  "/events/:eventId/registration-data/import",
+  protect,
+  authorizeEvent,
+  uploadRegistrationData.single("file"),
+  importRegistrationData,
+);
+
+
+// ==========================================
+// Delete All RegistrationData
+// ==========================================
+router.delete(
+  "/events/:eventId/registration-data",
+  protect,
+  authorizeEvent,
+  deleteAllRegistrationData,
+);
+
 
 // ==========================================
 // Get RegistrationData By ID
@@ -69,5 +95,7 @@ router.delete(
   authorizeEvent,
   deleteRegistrationData,
 );
+
+
 
 export default router;
