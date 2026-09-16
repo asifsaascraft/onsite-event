@@ -2,6 +2,7 @@ import express from "express";
 import {
   createRegistrationData,
   getRegistrationData,
+  getRegistrationDataSummary,
   getRegistrationDataById,
   updateRegistrationData,
   deleteRegistrationData,
@@ -39,6 +40,16 @@ router.get(
   protect,
   authorizeEvent,
   getRegistrationData,
+);
+
+// ==========================================
+// Get RegistrationData Summary
+// ==========================================
+router.get(
+  "/events/:eventId/registration-data/summary",
+  protect,
+  authorizeEvent,
+  getRegistrationDataSummary,
 );
 
 

@@ -129,6 +129,10 @@ const registrationDataPaths = {
 
                   note: "Special note",
 
+                  isPrinted: false,
+
+                  printedAt: null,
+
                   createdAt: "2026-09-15T10:00:00.000Z",
 
                   updatedAt: "2026-09-15T10:00:00.000Z",
@@ -282,6 +286,10 @@ const registrationDataPaths = {
 
                     note: "Special note",
 
+                    isPrinted: false,
+
+                    printedAt: null,
+
                     createdAt: "2026-09-15T10:00:00.000Z",
 
                     updatedAt: "2026-09-15T10:00:00.000Z",
@@ -356,6 +364,69 @@ const registrationDataPaths = {
 
                 data: {
                   deletedCount: 100,
+                },
+              },
+            },
+          },
+        },
+
+        400: badRequest400,
+        401: unauthorized401,
+        403: forbidden403,
+        404: notFound404,
+        500: internalServer500,
+      },
+    },
+  },
+
+  // ==========================================
+  // RegistrationData Summary
+  // ==========================================
+
+  "/events/{eventId}/registration-data/summary": {
+    get: {
+      tags: ["Registration Data"],
+
+      summary: "Get Registration Data Summary",
+
+      description:
+        "Get registration data summary for a specific event, including total, printed, and not printed registration data.",
+
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
+
+      parameters: [
+        {
+          name: "eventId",
+          in: "path",
+          required: true,
+
+          schema: {
+            type: "string",
+          },
+
+          example: "6852b4d04ef5f2e4dbd0d003",
+        },
+      ],
+
+      responses: {
+        200: {
+          description: "Registration data summary fetched successfully.",
+
+          content: {
+            "application/json": {
+              example: {
+                success: true,
+
+                message: "Registration data summary fetched successfully.",
+
+                data: {
+                  total: 100,
+                  printed: 65,
+                  notPrinted: 35,
                 },
               },
             },
@@ -563,6 +634,8 @@ const registrationDataPaths = {
 
                   isPrinted: true,
 
+                  printedAt: "2026-09-16T10:00:00.000Z",
+
                   createdAt: "2026-09-15T10:00:00.000Z",
 
                   updatedAt: "2026-09-16T10:00:00.000Z",
@@ -677,6 +750,10 @@ const registrationDataPaths = {
                   reference: "Friend",
 
                   note: "Special note",
+
+                  isPrinted: false,
+
+                  printedAt: null,
                 },
               },
             },
@@ -760,6 +837,10 @@ const registrationDataPaths = {
               country: "India",
 
               note: "Updated note",
+
+              isPrinted: false,
+
+              printedAt: null,
             },
           },
         },

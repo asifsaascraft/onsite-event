@@ -143,7 +143,6 @@ export const createRegistrationData = asyncHandler(async (req, res) => {
 // ==========================================
 // Get All RegistrationData
 // ==========================================
-
 export const getRegistrationData = asyncHandler(async (req, res) => {
   const { eventId } = req.params;
 
@@ -209,7 +208,6 @@ export const getRegistrationData = asyncHandler(async (req, res) => {
   // ==========================================
   // Get RegistrationData
   // ==========================================
-
   const [registrationData, total] = await Promise.all([
     RegistrationData.find(query)
       .populate("eventId", "eventName eventShortName")
@@ -228,10 +226,65 @@ export const getRegistrationData = asyncHandler(async (req, res) => {
   });
 });
 
+
+// ==========================================
+// Get RegistrationData Summary
+// ==========================================
+export const getRegistrationDataSummary = asyncHandler(async (req, res) => {
+  const { eventId } = req.params;
+
+  // ==========================================
+  // Validate Event ID
+  // ==========================================
+
+  if (!mongoose.Types.ObjectId.isValid(eventId)) {
+    throw new AppError("Invalid event ID.", 400);
+  }
+
+  // ==========================================
+  // Check Event
+  // ==========================================
+
+  const event = await Event.findById(eventId);
+
+  if (!event) {
+    throw new AppError("Event not found.", 404);
+  }
+
+  // ==========================================
+  // Get Summary
+  // ==========================================
+
+  const [total, printed] = await Promise.all([
+    RegistrationData.countDocuments({
+      eventId,
+    }),
+
+    RegistrationData.countDocuments({
+      eventId,
+      isPrinted: true,
+    }),
+  ]);
+
+  const notPrinted = total - printed;
+
+  // ==========================================
+  // Response
+  // ==========================================
+
+  return successResponse(res, {
+    message: "Registration data summary fetched successfully.",
+    data: {
+      total,
+      printed,
+      notPrinted,
+    },
+  });
+});
+
 // ==========================================
 // Get RegistrationData By ID
 // ==========================================
-
 export const getRegistrationDataById = asyncHandler(async (req, res) => {
   const { eventId, id } = req.params;
 
@@ -324,6 +377,7 @@ export const printRegistrationData = asyncHandler(async (req, res) => {
   // ==========================================
 
   registrationData.isPrinted = true;
+  registrationData.printedAt = new Date();
 
   await registrationData.save();
 

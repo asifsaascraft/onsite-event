@@ -98,6 +98,11 @@ const RegistrationDataSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    printedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

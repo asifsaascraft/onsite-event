@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import GroupCategory from "../models/GroupCategory.js";
 import RegistrationScan from "../models/RegistrationScan.js";
 import RegistrationData from "../models/RegistrationData.js";
 import RegDataType from "../models/RegDataType.js";
@@ -14,7 +14,6 @@ import { successResponse } from "../utils/response.js";
 // ==========================================
 // Scan RegistrationData
 // ==========================================
-
 export const scanRegistrationData = asyncHandler(async (req, res) => {
   const { eventId, categoryId } = req.params;
 
@@ -207,3 +206,143 @@ export const scanRegistrationData = asyncHandler(async (req, res) => {
     },
   });
 });
+
+
+
+// ==========================================
+// Get Registration Scan Summary
+// ==========================================
+export const getRegistrationScanSummary = asyncHandler(
+  async (req, res) => {
+    const { eventId } = req.params;
+
+    // ==========================================
+    // Validate Event ID
+    // ==========================================
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      throw new AppError("Invalid event ID.", 400);
+    }
+
+    // ==========================================
+    // Check Event
+    // ==========================================
+
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      throw new AppError("Event not found.", 404);
+    }
+
+    // ==========================================
+    // Get Categories
+    // ==========================================
+
+    const categories = await Category.find({
+      eventId,
+      status: "active",
+    })
+      .populate(
+        "groupCategoryId",
+        "groupCategoryName description",
+      )
+      .sort({
+        createdAt: 1,
+      });
+
+    // ==========================================
+    // Prepare Summary
+    // ==========================================
+
+    const summary = [];
+
+    for (const category of categories) {
+      // ==========================================
+      // Get Allowed Registration Data Types
+      // ==========================================
+
+      const privileges = await Privilege.find({
+        eventId,
+        categoryId: category._id,
+        isAllowed: true,
+      }).select("regDataTypeId");
+
+      const regDataTypeIds = privileges.map(
+        (privilege) => privilege.regDataTypeId,
+      );
+
+      // ==========================================
+      // Total Eligible Registration Data
+      // ==========================================
+
+      const total = await RegistrationData.countDocuments({
+        eventId,
+        regDataTypeId: {
+          $in: regDataTypeIds,
+        },
+      });
+
+      // ==========================================
+      // Total Scanned
+      // ==========================================
+
+      const scanned = await RegistrationScan.countDocuments({
+        eventId,
+        categoryId: category._id,
+      });
+
+      // ==========================================
+      // Coverage
+      // ==========================================
+
+      const coverage =
+        total > 0
+          ? Math.round((scanned / total) * 100)
+          : 0;
+
+      // ==========================================
+      // Add Category Summary
+      // ==========================================
+
+      const groupCategoryId = category.groupCategoryId;
+
+      let groupCategory = summary.find(
+        (item) =>
+          item.groupCategory._id.toString() ===
+          groupCategoryId._id.toString(),
+      );
+
+      if (!groupCategory) {
+        groupCategory = {
+          groupCategory: {
+            _id: groupCategoryId._id,
+            groupCategoryName:
+              groupCategoryId.groupCategoryName,
+          },
+
+          categories: [],
+        };
+
+        summary.push(groupCategory);
+      }
+
+      groupCategory.categories.push({
+        categoryId: category._id,
+        categoryName: category.categoryName,
+        scanned,
+        total,
+        coverage,
+      });
+    }
+
+    // ==========================================
+    // Response
+    // ==========================================
+
+    return successResponse(res, {
+      message: "Registration scan summary fetched successfully.",
+
+      data: summary,
+    });
+  },
+);

@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   scanRegistrationData,
+  getRegistrationScanSummary,
 } from "../controllers/registrationScanController.js";
 
 import protect from "../middlewares/protect.js";
@@ -25,5 +26,17 @@ router.post(
   validate,
   scanRegistrationData,
 );
+
+
+// ==========================================
+// Get Registration Scan Summary
+// ==========================================
+router.get(
+  "/events/:eventId/registration-scan/summary",
+  protect,
+  authorizeEvent,
+  getRegistrationScanSummary,
+);
+
 
 export default router;
