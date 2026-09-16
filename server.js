@@ -23,6 +23,7 @@ import groupCategoryRoutes from "./routes/groupCategoryRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import privilegeRoutes from "./routes/privilegeRoutes.js";
 import registrationDataRoutes from "./routes/registrationDataRoutes.js";
+import registrationScanRoutes from "./routes/registrationScanRoutes.js";
 
 // Connect Database
 await connectDB();
@@ -126,7 +127,7 @@ app.use("/api", groupCategoryRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", privilegeRoutes);
 app.use("/api", registrationDataRoutes);
-
+app.use("/api", registrationScanRoutes);
 
 // 404 Route
 app.use((req, res) => {

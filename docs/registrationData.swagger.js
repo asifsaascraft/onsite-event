@@ -465,6 +465,121 @@ const registrationDataPaths = {
       },
     },
   },
+
+  // ==========================================
+  // Print RegistrationData
+  // ==========================================
+
+  "/events/{eventId}/registration-data/{id}/print": {
+    patch: {
+      tags: ["Registration Data"],
+
+      summary: "Print Registration Data (BADGE PRINTING)",
+
+      description:
+        "Mark registration data as printed for a specific event. This API sets isPrinted to true.",
+
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
+
+      parameters: [
+        {
+          name: "eventId",
+          in: "path",
+          required: true,
+
+          schema: {
+            type: "string",
+          },
+
+          example: "6852b4d04ef5f2e4dbd0d003",
+        },
+
+        {
+          name: "id",
+          in: "path",
+          required: true,
+
+          schema: {
+            type: "string",
+          },
+
+          example: "6852b4d04ef5f2e4dbd0d030",
+        },
+      ],
+
+      responses: {
+        200: {
+          description: "Registration data marked as printed successfully.",
+
+          content: {
+            "application/json": {
+              example: {
+                success: true,
+
+                message: "Registration data marked as printed successfully.",
+
+                data: {
+                  _id: "6852b4d04ef5f2e4dbd0d030",
+
+                  eventId: {
+                    _id: "6852b4d04ef5f2e4dbd0d003",
+
+                    eventName: "National Convention 2026",
+
+                    eventShortName: "NC2026",
+                  },
+
+                  regDataTypeId: {
+                    _id: "6852b4d04ef5f2e4dbd0d010",
+
+                    regDataTypeName: "Spot",
+                  },
+
+                  name: "John Doe",
+
+                  regNum: "SPOT-001",
+
+                  email: "john@example.com",
+
+                  mobile: "9876543210",
+
+                  mciNumber: "MCI123456",
+
+                  address: "123 Main Street",
+
+                  city: "Hyderabad",
+
+                  state: "Telangana",
+
+                  country: "India",
+
+                  reference: "Friend",
+
+                  note: "Special note",
+
+                  isPrinted: true,
+
+                  createdAt: "2026-09-15T10:00:00.000Z",
+
+                  updatedAt: "2026-09-16T10:00:00.000Z",
+                },
+              },
+            },
+          },
+        },
+
+        400: badRequest400,
+        401: unauthorized401,
+        403: forbidden403,
+        404: notFound404,
+        500: internalServer500,
+      },
+    },
+  },
   // ==========================================
   // Get / Update / Delete By ID
   // ==========================================

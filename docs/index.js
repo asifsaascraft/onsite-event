@@ -7,6 +7,7 @@ import groupCategoryPaths from "./groupCategory.swagger.js";
 import categoryPaths from "./category.swagger.js";
 import privilegePaths from "./privilege.swagger.js";
 import registrationDataPaths from "./registrationData.swagger.js";
+import registrationScanPaths from "./registrationScan.swagger.js";
 
 const paths = {
   ...authPaths,
@@ -18,6 +19,7 @@ const paths = {
   ...categoryPaths,
   ...privilegePaths,
   ...registrationDataPaths,
+  ...registrationScanPaths,
 };
 
 export default paths;

@@ -7,6 +7,7 @@ import {
   deleteRegistrationData,
   deleteAllRegistrationData,
   importRegistrationData,
+  printRegistrationData,
 } from "../controllers/registrationDataController.js";
 import protect from "../middlewares/protect.js";
 import authorizeEvent from "../middlewares/authorizeEvent.js";
@@ -73,6 +74,17 @@ router.get(
   authorizeEvent,
   getRegistrationDataById,
 );
+
+// ==========================================
+// Print RegistrationData
+// ==========================================
+router.patch(
+  "/events/:eventId/registration-data/:id/print",
+  protect,
+  authorizeEvent,
+  printRegistrationData,
+);
+
 
 // ==========================================
 // Update RegistrationData

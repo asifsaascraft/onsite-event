@@ -20,10 +20,7 @@ const RegistrationDataSchema = new mongoose.Schema(
     regDataTypeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "RegDataType",
-      required: [
-        true,
-        "Reg data type is required.",
-      ],
+      required: [true, "Reg data type is required."],
       index: true,
     },
 
@@ -42,10 +39,7 @@ const RegistrationDataSchema = new mongoose.Schema(
     // Example: SPOT-001, SPOT-002, SPOT-003
     regNum: {
       type: String,
-      required: [
-        true,
-        "Registration number is required.",
-      ],
+      required: [true, "Registration number is required."],
       trim: true,
     },
 
@@ -98,6 +92,12 @@ const RegistrationDataSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+
+    // for printing
+    isPrinted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -143,9 +143,6 @@ RegistrationDataSchema.set("toJSON", {
 
 const RegistrationData =
   mongoose.models.RegistrationData ||
-  mongoose.model(
-    "RegistrationData",
-    RegistrationDataSchema,
-  );
+  mongoose.model("RegistrationData", RegistrationDataSchema);
 
 export default RegistrationData;
