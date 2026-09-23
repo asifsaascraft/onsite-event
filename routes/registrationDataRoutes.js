@@ -3,6 +3,8 @@ import {
   createRegistrationData,
   getRegistrationData,
   getRegistrationDataSummary,
+  getAllPrintedRegistrationData,
+  getPrintedRegistrationDataById,
   getRegistrationDataById,
   updateRegistrationData,
   deleteRegistrationData,
@@ -52,6 +54,15 @@ router.get(
   getRegistrationDataSummary,
 );
 
+// ==========================================
+// Get All Printed RegistrationData
+// ==========================================
+router.get(
+  "/events/:eventId/registration-data/printed",
+  protect,
+  authorizeEvent,
+  getAllPrintedRegistrationData,
+);
 
 // ==========================================
 // Import RegistrationData
@@ -84,6 +95,16 @@ router.get(
   protect,
   authorizeEvent,
   getRegistrationDataById,
+);
+
+// ==========================================
+// Get Printed RegistrationData By ID
+// ==========================================
+router.get(
+  "/events/:eventId/registration-data/printed/:id",
+  protect,
+  authorizeEvent,
+  getPrintedRegistrationDataById,
 );
 
 // ==========================================

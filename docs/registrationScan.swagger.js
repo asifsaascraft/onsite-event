@@ -428,6 +428,319 @@ const registrationScanPaths = {
       },
     },
   },
+  // ==========================================
+  // Get All Registration Scans
+  // ==========================================
+
+  "/events/{eventId}/registration-scans": {
+    get: {
+      tags: ["Registration Scan"],
+
+      summary: "Get All Registration Scans",
+
+      description:
+        "Get all registration scans belonging to a specific event with pagination and sorting.",
+
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
+
+      parameters: [
+        {
+          name: "eventId",
+          in: "path",
+          required: true,
+
+          schema: {
+            type: "string",
+          },
+
+          example: "6852b4d04ef5f2e4dbd0d003",
+        },
+
+        {
+          name: "page",
+          in: "query",
+          required: false,
+
+          schema: {
+            type: "integer",
+            example: 1,
+          },
+        },
+
+        {
+          name: "limit",
+          in: "query",
+          required: false,
+
+          schema: {
+            type: "integer",
+            example: 20,
+          },
+        },
+
+        {
+          name: "sortBy",
+          in: "query",
+          required: false,
+
+          schema: {
+            type: "string",
+            enum: ["scannedAt", "createdAt"],
+            example: "scannedAt",
+          },
+        },
+
+        {
+          name: "order",
+          in: "query",
+          required: false,
+
+          schema: {
+            type: "string",
+            enum: ["asc", "desc"],
+            example: "desc",
+          },
+        },
+      ],
+
+      responses: {
+        200: {
+          description: "Registration scans fetched successfully.",
+
+          content: {
+            "application/json": {
+              example: {
+                success: true,
+
+                message: "Registration scans fetched successfully.",
+
+                data: [
+                  {
+                    _id: "6852b4d04ef5f2e4dbd0d060",
+
+                    eventId: {
+                      _id: "6852b4d04ef5f2e4dbd0d003",
+
+                      eventName: "Hyderabad Convention",
+
+                      eventShortName: "HYD-CON",
+                    },
+
+                    registrationDataId: {
+                      _id: "6852b4d04ef5f2e4dbd0d030",
+
+                      regNum: "SPOT-001",
+
+                      name: "John Doe",
+
+                      email: "john@example.com",
+
+                      mobile: "9876543210",
+                    },
+
+                    categoryId: {
+                      _id: "6852b4d04ef5f2e4dbd0d050",
+
+                      categoryCode: "KIT",
+
+                      categoryName: "Kitbag",
+
+                      status: "active",
+
+                      groupCategoryId: "6852b4d04ef5f2e4dbd0d040",
+                    },
+
+                    isScanned: true,
+
+                    scannedAt: "2026-09-16T08:30:00.000Z",
+
+                    createdAt: "2026-09-16T08:30:00.000Z",
+
+                    updatedAt: "2026-09-16T08:30:00.000Z",
+                  },
+                ],
+
+                pagination: {
+                  page: 1,
+
+                  limit: 20,
+
+                  total: 100,
+
+                  totalPages: 5,
+
+                  from: 1,
+
+                  to: 20,
+
+                  hasPreviousPage: false,
+
+                  hasNextPage: true,
+                },
+              },
+            },
+          },
+        },
+
+        400: {
+          description: "Invalid event ID.",
+        },
+
+        401: {
+          description: "Authentication required or invalid access token.",
+        },
+
+        403: {
+          description: "User is not authorized for this event.",
+        },
+
+        404: {
+          description: "Event not found.",
+        },
+
+        500: {
+          description: "Internal server error.",
+        },
+      },
+    },
+  },
+
+  // ==========================================
+  // Get Registration Scan By ID
+  // ==========================================
+
+  "/events/{eventId}/registration-scans/{id}": {
+    get: {
+      tags: ["Registration Scan"],
+
+      summary: "Get Registration Scan By ID",
+
+      description:
+        "Get a specific registration scan by ID for a specific event.",
+
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
+
+      parameters: [
+        {
+          name: "eventId",
+          in: "path",
+          required: true,
+
+          schema: {
+            type: "string",
+          },
+
+          example: "6852b4d04ef5f2e4dbd0d003",
+        },
+
+        {
+          name: "id",
+          in: "path",
+          required: true,
+
+          schema: {
+            type: "string",
+          },
+
+          example: "6852b4d04ef5f2e4dbd0d060",
+        },
+      ],
+
+      responses: {
+        200: {
+          description: "Registration scan fetched successfully.",
+
+          content: {
+            "application/json": {
+              example: {
+                success: true,
+
+                message: "Registration scan fetched successfully.",
+
+                data: {
+                  _id: "6852b4d04ef5f2e4dbd0d060",
+
+                  eventId: {
+                    _id: "6852b4d04ef5f2e4dbd0d003",
+
+                    eventName: "Hyderabad Convention",
+
+                    eventShortName: "HYD-CON",
+                  },
+
+                  registrationDataId: {
+                    _id: "6852b4d04ef5f2e4dbd0d030",
+
+                    regNum: "SPOT-001",
+
+                    name: "John Doe",
+
+                    email: "john@example.com",
+
+                    mobile: "9876543210",
+                  },
+
+                  categoryId: {
+                    _id: "6852b4d04ef5f2e4dbd0d050",
+
+                    categoryCode: "KIT",
+
+                    categoryName: "Kitbag",
+
+                    status: "active",
+
+                    groupCategoryId: {
+                      _id: "6852b4d04ef5f2e4dbd0d040",
+
+                      groupCategoryName: "Gift",
+
+                      description: "Gift distribution categories",
+                    },
+                  },
+
+                  isScanned: true,
+
+                  scannedAt: "2026-09-16T08:30:00.000Z",
+
+                  createdAt: "2026-09-16T08:30:00.000Z",
+
+                  updatedAt: "2026-09-16T08:30:00.000Z",
+                },
+              },
+            },
+          },
+        },
+
+        400: {
+          description: "Invalid event ID or registration scan ID.",
+        },
+
+        401: {
+          description: "Authentication required or invalid access token.",
+        },
+
+        403: {
+          description: "User is not authorized for this event.",
+        },
+
+        404: {
+          description: "Event or registration scan not found.",
+        },
+
+        500: {
+          description: "Internal server error.",
+        },
+      },
+    },
+  },
 };
 
 export default registrationScanPaths;

@@ -443,6 +443,228 @@ const registrationDataPaths = {
   },
 
   // ==========================================
+  // Get All Printed RegistrationData
+  // ==========================================
+
+  "/events/{eventId}/registration-data/printed": {
+    get: {
+      tags: ["Registration Data"],
+
+      summary: "Get All Printed Registration Data",
+
+      description:
+        "Get all printed registration data belonging to a specific event. Only registration data with isPrinted set to true is returned.",
+
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
+
+      // ==========================================
+      // Parameters
+      // ==========================================
+
+      parameters: [
+        {
+          name: "eventId",
+          in: "path",
+          required: true,
+
+          schema: {
+            type: "string",
+          },
+
+          example: "6852b4d04ef5f2e4dbd0d003",
+        },
+
+        {
+          name: "page",
+          in: "query",
+          required: false,
+
+          schema: {
+            type: "integer",
+            example: 1,
+          },
+        },
+
+        {
+          name: "limit",
+          in: "query",
+          required: false,
+
+          schema: {
+            type: "integer",
+            example: 20,
+          },
+        },
+
+        {
+          name: "search",
+          in: "query",
+          required: false,
+
+          schema: {
+            type: "string",
+            example: "John",
+          },
+        },
+
+        {
+          name: "sortBy",
+          in: "query",
+          required: false,
+
+          schema: {
+            type: "string",
+
+            enum: ["regNum", "name", "printedAt", "createdAt"],
+
+            example: "printedAt",
+          },
+        },
+
+        {
+          name: "order",
+          in: "query",
+          required: false,
+
+          schema: {
+            type: "string",
+
+            enum: ["asc", "desc"],
+
+            example: "desc",
+          },
+        },
+      ],
+
+      // ==========================================
+      // Responses
+      // ==========================================
+
+      responses: {
+        // ==========================================
+        // 200 - Success
+        // ==========================================
+
+        200: {
+          description: "Printed registration data fetched successfully.",
+
+          content: {
+            "application/json": {
+              example: {
+                success: true,
+
+                message: "Printed registration data fetched successfully.",
+
+                data: [
+                  {
+                    _id: "6852b4d04ef5f2e4dbd0d030",
+
+                    eventId: {
+                      _id: "6852b4d04ef5f2e4dbd0d003",
+
+                      eventName: "National Convention 2026",
+
+                      eventShortName: "NC2026",
+                    },
+
+                    regDataTypeId: {
+                      _id: "6852b4d04ef5f2e4dbd0d010",
+
+                      regDataTypeName: "Spot",
+                    },
+
+                    name: "John Doe",
+
+                    regNum: "SPOT-001",
+
+                    email: "john@example.com",
+
+                    mobile: "9876543210",
+
+                    mciNumber: "MCI123456",
+
+                    address: "123 Main Street",
+
+                    city: "Hyderabad",
+
+                    state: "Telangana",
+
+                    country: "India",
+
+                    reference: "Friend",
+
+                    note: "Special note",
+
+                    isPrinted: true,
+
+                    printedAt: "2026-09-16T10:00:00.000Z",
+
+                    createdAt: "2026-09-15T10:00:00.000Z",
+
+                    updatedAt: "2026-09-16T10:00:00.000Z",
+                  },
+                ],
+
+                pagination: {
+                  page: 1,
+
+                  limit: 20,
+
+                  total: 65,
+
+                  totalPages: 4,
+
+                  from: 1,
+
+                  to: 20,
+
+                  hasPreviousPage: false,
+
+                  hasNextPage: true,
+                },
+              },
+            },
+          },
+        },
+
+        // ==========================================
+        // 400 - Bad Request
+        // ==========================================
+
+        400: badRequest400,
+
+        // ==========================================
+        // 401 - Unauthorized
+        // ==========================================
+
+        401: unauthorized401,
+
+        // ==========================================
+        // 403 - Forbidden
+        // ==========================================
+
+        403: forbidden403,
+
+        // ==========================================
+        // 404 - Not Found
+        // ==========================================
+
+        404: notFound404,
+
+        // ==========================================
+        // 500 - Internal Server Error
+        // ==========================================
+
+        500: internalServer500,
+      },
+    },
+  },
+
+  // ==========================================
   // Import RegistrationData
   // ==========================================
 
@@ -649,6 +871,159 @@ const registrationDataPaths = {
         401: unauthorized401,
         403: forbidden403,
         404: notFound404,
+        500: internalServer500,
+      },
+    },
+  },
+
+  // ==========================================
+  // Get Printed RegistrationData By ID
+  // ==========================================
+
+  "/events/{eventId}/registration-data/printed/{id}": {
+    get: {
+      tags: ["Registration Data"],
+
+      summary: "Get Printed Registration Data By ID",
+
+      description:
+        "Get printed registration data by ID for a specific event. Only registration data with isPrinted set to true can be returned.",
+
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
+
+      // ==========================================
+      // Parameters
+      // ==========================================
+
+      parameters: [
+        {
+          name: "eventId",
+          in: "path",
+          required: true,
+
+          schema: {
+            type: "string",
+          },
+
+          example: "6852b4d04ef5f2e4dbd0d003",
+        },
+
+        {
+          name: "id",
+          in: "path",
+          required: true,
+
+          schema: {
+            type: "string",
+          },
+
+          example: "6852b4d04ef5f2e4dbd0d030",
+        },
+      ],
+
+      // ==========================================
+      // Responses
+      // ==========================================
+
+      responses: {
+        // ==========================================
+        // 200 - Success
+        // ==========================================
+
+        200: {
+          description: "Printed registration data fetched successfully.",
+
+          content: {
+            "application/json": {
+              example: {
+                success: true,
+
+                message: "Printed registration data fetched successfully.",
+
+                data: {
+                  _id: "6852b4d04ef5f2e4dbd0d030",
+
+                  eventId: {
+                    _id: "6852b4d04ef5f2e4dbd0d003",
+
+                    eventName: "National Convention 2026",
+
+                    eventShortName: "NC2026",
+                  },
+
+                  regDataTypeId: {
+                    _id: "6852b4d04ef5f2e4dbd0d010",
+
+                    regDataTypeName: "Spot",
+                  },
+
+                  name: "John Doe",
+
+                  regNum: "SPOT-001",
+
+                  email: "john@example.com",
+
+                  mobile: "9876543210",
+
+                  mciNumber: "MCI123456",
+
+                  address: "123 Main Street",
+
+                  city: "Hyderabad",
+
+                  state: "Telangana",
+
+                  country: "India",
+
+                  reference: "Friend",
+
+                  note: "Special note",
+
+                  isPrinted: true,
+
+                  printedAt: "2026-09-16T10:00:00.000Z",
+
+                  createdAt: "2026-09-15T10:00:00.000Z",
+
+                  updatedAt: "2026-09-16T10:00:00.000Z",
+                },
+              },
+            },
+          },
+        },
+
+        // ==========================================
+        // 400 - Bad Request
+        // ==========================================
+
+        400: badRequest400,
+
+        // ==========================================
+        // 401 - Unauthorized
+        // ==========================================
+
+        401: unauthorized401,
+
+        // ==========================================
+        // 403 - Forbidden
+        // ==========================================
+
+        403: forbidden403,
+
+        // ==========================================
+        // 404 - Not Found
+        // ==========================================
+
+        404: notFound404,
+
+        // ==========================================
+        // 500 - Internal Server Error
+        // ==========================================
+
         500: internalServer500,
       },
     },

@@ -6,7 +6,8 @@ import RegDataType from "../models/RegDataType.js";
 import Category from "../models/Category.js";
 import Privilege from "../models/Privilege.js";
 import Event from "../models/Event.js";
-
+import { getPagination, buildPaginationMeta } from "../utils/pagination.js";
+import buildSortQuery from "../utils/sort.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import AppError from "../utils/appError.js";
 import { successResponse } from "../utils/response.js";
@@ -343,6 +344,183 @@ export const getRegistrationScanSummary = asyncHandler(
       message: "Registration scan summary fetched successfully.",
 
       data: summary,
+    });
+  },
+);
+
+// ==========================================
+// Get All Registration Scans
+// ==========================================
+export const getRegistrationScans = asyncHandler(async (req, res) => {
+  const { eventId } = req.params;
+
+  // ==========================================
+  // Validate Event ID
+  // ==========================================
+
+  if (!mongoose.Types.ObjectId.isValid(eventId)) {
+    throw new AppError("Invalid event ID.", 400);
+  }
+
+  // ==========================================
+  // Check Event
+  // ==========================================
+
+  const event = await Event.findById(eventId);
+
+  if (!event) {
+    throw new AppError("Event not found.", 404);
+  }
+
+  // ==========================================
+  // Pagination
+  // ==========================================
+
+  const { page, limit, skip } = getPagination(req);
+
+  // ==========================================
+  // Query
+  // ==========================================
+
+  const query = {
+    eventId,
+  };
+
+  // ==========================================
+  // Sort
+  // ==========================================
+
+  const sortQuery = buildSortQuery(
+    req,
+    ["scannedAt", "createdAt"],
+    "scannedAt",
+  );
+
+  // ==========================================
+  // Get Registration Scans
+  // ==========================================
+  const [scans, total] = await Promise.all([
+    RegistrationScan.find(query)
+      .populate(
+        "eventId",
+        "eventName eventShortName",
+      )
+      .populate(
+        "registrationDataId",
+        "regNum name email mobile",
+      )
+      .populate(
+        "categoryId",
+        "categoryCode categoryName status groupCategoryId",
+      )
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(limit),
+
+    RegistrationScan.countDocuments(query),
+  ]);
+
+  // ==========================================
+  // Response
+  // ==========================================
+
+  return successResponse(res, {
+    message: "Registration scans fetched successfully.",
+
+    data: scans,
+
+    pagination: buildPaginationMeta(
+      total,
+      page,
+      limit,
+    ),
+  });
+});
+
+
+// ==========================================
+// Get Registration Scan By ID
+// ==========================================
+export const getRegistrationScanById = asyncHandler(
+  async (req, res) => {
+    const { eventId, id } = req.params;
+
+    // ==========================================
+    // Validate Event ID
+    // ==========================================
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      throw new AppError("Invalid event ID.", 400);
+    }
+
+    // ==========================================
+    // Validate Registration Scan ID
+    // ==========================================
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new AppError(
+        "Invalid registration scan ID.",
+        400,
+      );
+    }
+
+    // ==========================================
+    // Check Event
+    // ==========================================
+
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      throw new AppError("Event not found.", 404);
+    }
+
+    // ==========================================
+    // Get Registration Scan
+    // ==========================================
+
+    const registrationScan =
+      await RegistrationScan.findOne({
+        _id: id,
+        eventId,
+      })
+        .populate(
+          "eventId",
+          "eventName eventShortName",
+        )
+        .populate(
+          "registrationDataId",
+          "regNum name email mobile",
+        )
+        .populate({
+          path: "categoryId",
+          select:
+            "categoryCode categoryName status groupCategoryId",
+          populate: {
+            path: "groupCategoryId",
+            select:
+              "groupCategoryName description",
+          },
+        });
+
+    // ==========================================
+    // Check Registration Scan
+    // ==========================================
+
+    if (!registrationScan) {
+      throw new AppError(
+        "Registration scan not found in this event.",
+        404,
+      );
+    }
+
+    // ==========================================
+    // Response
+    // ==========================================
+
+    return successResponse(res, {
+      message: "Registration scan fetched successfully.",
+
+      data: registrationScan,
     });
   },
 );

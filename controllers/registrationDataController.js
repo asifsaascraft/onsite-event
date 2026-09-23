@@ -282,6 +282,115 @@ export const getRegistrationDataSummary = asyncHandler(async (req, res) => {
   });
 });
 
+
+// ==========================================
+// Get All Printed RegistrationData
+// ==========================================
+export const getAllPrintedRegistrationData = asyncHandler(
+  async (req, res) => {
+    const { eventId } = req.params;
+
+    // ==========================================
+    // Validate Event ID
+    // ==========================================
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      throw new AppError("Invalid event ID.", 400);
+    }
+
+    // ==========================================
+    // Check Event
+    // ==========================================
+
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      throw new AppError("Event not found.", 404);
+    }
+
+    // ==========================================
+    // Pagination
+    // ==========================================
+
+    const { page, limit, skip } = getPagination(req);
+
+    // ==========================================
+    // Search
+    // ==========================================
+
+    const searchQuery = buildSearchQuery(req, [
+      "regNum",
+      "name",
+      "email",
+      "mobile",
+      "mciNumber",
+      "city",
+      "state",
+      "country",
+      "reference",
+    ]);
+
+    // ==========================================
+    // Query
+    // ==========================================
+
+    const query = {
+      eventId,
+      isPrinted: true,
+      ...searchQuery,
+    };
+
+    // ==========================================
+    // Sort
+    // ==========================================
+
+    const sortQuery = buildSortQuery(
+      req,
+      ["regNum", "name", "printedAt", "createdAt"],
+      "printedAt",
+    );
+
+    // ==========================================
+    // Get Printed RegistrationData
+    // ==========================================
+
+    const [registrationData, total] = await Promise.all([
+      RegistrationData.find(query)
+        .populate(
+          "eventId",
+          "eventName eventShortName",
+        )
+        .populate(
+          "regDataTypeId",
+          "regDataTypeName",
+        )
+        .sort(sortQuery)
+        .skip(skip)
+        .limit(limit),
+
+      RegistrationData.countDocuments(query),
+    ]);
+
+    // ==========================================
+    // Response
+    // ==========================================
+
+    return successResponse(res, {
+      message:
+        "Printed registration data fetched successfully.",
+
+      data: registrationData,
+
+      pagination: buildPaginationMeta(
+        total,
+        page,
+        limit,
+      ),
+    });
+  },
+);
+
+
 // ==========================================
 // Get RegistrationData By ID
 // ==========================================
@@ -330,6 +439,86 @@ export const getRegistrationDataById = asyncHandler(async (req, res) => {
     data: registrationData,
   });
 });
+
+
+// ==========================================
+// Get Printed RegistrationData By ID
+// ==========================================
+export const getPrintedRegistrationDataById = asyncHandler(
+  async (req, res) => {
+    const { eventId, id } = req.params;
+
+    // ==========================================
+    // Validate Event ID
+    // ==========================================
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      throw new AppError("Invalid event ID.", 400);
+    }
+
+    // ==========================================
+    // Validate RegistrationData ID
+    // ==========================================
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new AppError(
+        "Invalid registration data ID.",
+        400,
+      );
+    }
+
+    // ==========================================
+    // Check Event
+    // ==========================================
+
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      throw new AppError("Event not found.", 404);
+    }
+
+    // ==========================================
+    // Get Printed RegistrationData
+    // ==========================================
+
+    const registrationData = await RegistrationData.findOne({
+      _id: id,
+      eventId,
+      isPrinted: true,
+    })
+      .populate(
+        "eventId",
+        "eventName eventShortName",
+      )
+      .populate(
+        "regDataTypeId",
+        "regDataTypeName",
+      );
+
+    // ==========================================
+    // Check RegistrationData
+    // ==========================================
+
+    if (!registrationData) {
+      throw new AppError(
+        "Printed registration data not found in this event.",
+        404,
+      );
+    }
+
+    // ==========================================
+    // Response
+    // ==========================================
+
+    return successResponse(res, {
+      message:
+        "Printed registration data fetched successfully.",
+
+      data: registrationData,
+    });
+  },
+);
+
 
 // ==========================================
 // Print RegistrationData

@@ -3,6 +3,8 @@ import express from "express";
 import {
   scanRegistrationData,
   getRegistrationScanSummary,
+  getRegistrationScans,
+  getRegistrationScanById,
 } from "../controllers/registrationScanController.js";
 
 import protect from "../middlewares/protect.js";
@@ -36,6 +38,26 @@ router.get(
   protect,
   authorizeEvent,
   getRegistrationScanSummary,
+);
+
+// ==========================================
+// Get All Registration Scans
+// ==========================================
+router.get(
+  "/events/:eventId/registration-scans",
+  protect,
+  authorizeEvent,
+  getRegistrationScans,
+);
+
+// ==========================================
+// Get Registration Scan By ID
+// ==========================================
+router.get(
+  "/events/:eventId/registration-scans/:id",
+  protect,
+  authorizeEvent,
+  getRegistrationScanById,
 );
 
 
