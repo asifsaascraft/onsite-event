@@ -9,6 +9,12 @@ import { successResponse } from "../utils/response.js";
 import { getPagination, buildPaginationMeta } from "../utils/pagination.js";
 import buildSearchQuery from "../utils/search.js";
 import buildSortQuery from "../utils/sort.js";
+import Category from "../models/Category.js";
+import GroupCategory from "../models/GroupCategory.js";
+import Privilege from "../models/Privilege.js";
+import RegistrationScan from "../models/RegistrationScan.js";
+
+
 
 // ==========================================
 // Generate Registration Number
@@ -1044,3 +1050,266 @@ export const importRegistrationData = asyncHandler(async (req, res) => {
     },
   });
 });
+
+
+// ==========================================
+// Export RegistrationData
+// ==========================================
+export const exportRegistrationData = asyncHandler(
+  async (req, res) => {
+    const { eventId } = req.params;
+
+    // ==========================================
+    // Validate Event ID
+    // ==========================================
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      throw new AppError("Invalid event ID.", 400);
+    }
+
+    // ==========================================
+    // Check Event
+    // ==========================================
+
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      throw new AppError("Event not found.", 404);
+    }
+
+    // ==========================================
+    // Get Registration Data
+    // ==========================================
+
+    const registrationData =
+      await RegistrationData.find({
+        eventId,
+      })
+        .populate(
+          "regDataTypeId",
+          "regDataTypeName",
+        )
+        .sort({
+          createdAt: 1,
+        })
+        .lean();
+
+    // ==========================================
+    // Get Categories
+    // ==========================================
+
+    const categories = await Category.find({
+      eventId,
+    })
+      .populate(
+        "groupCategoryId",
+        "groupCategoryName description",
+      )
+      .sort({
+        createdAt: 1,
+      })
+      .lean();
+
+    // ==========================================
+    // Get Privileges
+    // ==========================================
+
+    const privileges = await Privilege.find({
+      eventId,
+    })
+      .select(
+        "regDataTypeId categoryId isAllowed",
+      )
+      .lean();
+
+    // ==========================================
+    // Get Registration Scans
+    // ==========================================
+
+    const scans = await RegistrationScan.find({
+      eventId,
+    })
+      .select(
+        "registrationDataId categoryId isScanned scannedAt",
+      )
+      .lean();
+
+    // ==========================================
+    // Create Privilege Map
+    // ==========================================
+
+    const privilegeMap = new Map();
+
+    for (const privilege of privileges) {
+      const key =
+        `${privilege.regDataTypeId}_${privilege.categoryId}`;
+
+      privilegeMap.set(
+        key,
+        privilege.isAllowed,
+      );
+    }
+
+    // ==========================================
+    // Create Scan Map
+    // ==========================================
+
+    const scanMap = new Map();
+
+    for (const scan of scans) {
+      const key =
+        `${scan.registrationDataId}_${scan.categoryId}`;
+
+      scanMap.set(key, {
+        isScanned: scan.isScanned,
+        scannedAt: scan.scannedAt,
+      });
+    }
+
+    // ==========================================
+    // Prepare Export Data
+    // ==========================================
+
+    const data = registrationData.map(
+      (registration) => {
+        const categoriesData = categories.map(
+          (category) => {
+            const privilegeKey =
+              `${registration.regDataTypeId._id}_${category._id}`;
+
+            const scanKey =
+              `${registration._id}_${category._id}`;
+
+            const isAllowed =
+              privilegeMap.get(privilegeKey) || false;
+
+            const scan =
+              scanMap.get(scanKey);
+
+            return {
+              groupCategory: {
+                _id:
+                  category.groupCategoryId?._id ||
+                  null,
+
+                groupCategoryName:
+                  category.groupCategoryId
+                    ?.groupCategoryName ||
+                  null,
+              },
+
+              category: {
+                _id: category._id,
+
+                categoryCode:
+                  category.categoryCode,
+
+                categoryName:
+                  category.categoryName,
+
+                status:
+                  category.status,
+
+                day:
+                  category.day || null,
+
+                hall:
+                  category.hall || null,
+
+                session:
+                  category.session || null,
+
+                time:
+                  category.time || null,
+              },
+
+              isAllowed,
+
+              isScanned:
+                scan?.isScanned || false,
+
+              scannedAt:
+                scan?.scannedAt || null,
+            };
+          },
+        );
+
+        return {
+          _id: registration._id,
+
+          regNum:
+            registration.regNum,
+
+          name:
+            registration.name,
+
+          email:
+            registration.email || null,
+
+          mobile:
+            registration.mobile || null,
+
+          mciNumber:
+            registration.mciNumber || null,
+
+          address:
+            registration.address || null,
+
+          city:
+            registration.city || null,
+
+          state:
+            registration.state || null,
+
+          country:
+            registration.country || null,
+
+          reference:
+            registration.reference || null,
+
+          note:
+            registration.note || null,
+
+          regDataType: {
+            _id:
+              registration.regDataTypeId?._id ||
+              null,
+
+            regDataTypeName:
+              registration.regDataTypeId
+                ?.regDataTypeName ||
+              null,
+          },
+
+          printing: {
+            isPrinted:
+              registration.isPrinted,
+
+            printedAt:
+              registration.printedAt || null,
+          },
+
+          categories:
+            categoriesData,
+
+          createdAt:
+            registration.createdAt,
+
+          updatedAt:
+            registration.updatedAt,
+        };
+      },
+    );
+
+    // ==========================================
+    // Response
+    // ==========================================
+
+    return successResponse(res, {
+      message:
+        "Registration data exported successfully.",
+
+      data,
+    });
+  },
+);

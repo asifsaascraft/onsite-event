@@ -11,6 +11,7 @@ import {
   deleteAllRegistrationData,
   importRegistrationData,
   printRegistrationData,
+  exportRegistrationData,
 } from "../controllers/registrationDataController.js";
 import protect from "../middlewares/protect.js";
 import authorizeEvent from "../middlewares/authorizeEvent.js";
@@ -62,6 +63,16 @@ router.get(
   protect,
   authorizeEvent,
   getAllPrintedRegistrationData,
+);
+
+// ==========================================
+// Export RegistrationData
+// ==========================================
+router.get(
+  "/events/:eventId/registration-data/export",
+  protect,
+  authorizeEvent,
+  exportRegistrationData,
 );
 
 // ==========================================

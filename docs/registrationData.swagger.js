@@ -1028,6 +1028,254 @@ const registrationDataPaths = {
       },
     },
   },
+
+  // ==========================================
+  // Export RegistrationData
+  // ==========================================
+
+  "/events/{eventId}/registration-data/export": {
+    get: {
+      tags: ["Registration Data"],
+
+      summary: "Export Registration Data",
+
+      description:
+        "Export all registration data for a specific event, including registration details, printing information, all categories, group categories, privileges, and scan information category-wise.",
+
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
+
+      // ==========================================
+      // Parameters
+      // ==========================================
+
+      parameters: [
+        {
+          name: "eventId",
+          in: "path",
+          required: true,
+
+          schema: {
+            type: "string",
+          },
+
+          example: "6852b4d04ef5f2e4dbd0d003",
+        },
+      ],
+
+      // ==========================================
+      // Responses
+      // ==========================================
+
+      responses: {
+        // ==========================================
+        // 200 - Success
+        // ==========================================
+
+        200: {
+          description: "Registration data exported successfully.",
+
+          content: {
+            "application/json": {
+              example: {
+                success: true,
+
+                message: "Registration data exported successfully.",
+
+                data: {
+                  event: {
+                    _id: "6852b4d04ef5f2e4dbd0d003",
+                    eventName: "National Convention 2026",
+                    eventShortName: "NC2026",
+                  },
+
+                  registrations: [
+                    {
+                      _id: "6852b4d04ef5f2e4dbd0d030",
+
+                      eventId: "6852b4d04ef5f2e4dbd0d003",
+
+                      regDataType: {
+                        _id: "6852b4d04ef5f2e4dbd0d010",
+                        regDataTypeName: "Spot",
+                      },
+
+                      name: "John Doe",
+
+                      regNum: "SPOT-001",
+
+                      email: "john@example.com",
+
+                      mobile: "9876543210",
+
+                      mciNumber: "MCI123456",
+
+                      address: "123 Main Street",
+
+                      city: "Hyderabad",
+
+                      state: "Telangana",
+
+                      country: "India",
+
+                      reference: "Friend",
+
+                      note: "Special note",
+
+                      // ==========================================
+                      // Printing Information
+                      // ==========================================
+
+                      printing: {
+                        isPrinted: true,
+                        printedAt: "2026-09-16T10:00:00.000Z",
+                      },
+
+                      // ==========================================
+                      // Category-wise Information
+                      // ==========================================
+
+                      categories: [
+                        {
+                          category: {
+                            _id: "6852b4d04ef5f2e4dbd0d101",
+
+                            categoryCode: "CAT-001",
+
+                            categoryName: "General Session",
+
+                            status: "active",
+
+                            day: "Day 1",
+
+                            hall: "Hall A",
+
+                            session: "Morning",
+
+                            time: "10:00 AM",
+
+                            groupCategory: {
+                              _id: "6852b4d04ef5f2e4dbd0d201",
+
+                              groupCategoryName: "Main Sessions",
+
+                              description: "Main event sessions",
+                            },
+                          },
+
+                          privilege: {
+                            _id: "6852b4d04ef5f2e4dbd0d301",
+
+                            isAllowed: true,
+                          },
+
+                          scan: {
+                            _id: "6852b4d04ef5f2e4dbd0d401",
+
+                            isScanned: true,
+
+                            scannedAt: "2026-09-16T11:30:00.000Z",
+
+                            createdAt: "2026-09-16T11:30:00.000Z",
+
+                            updatedAt: "2026-09-16T11:30:00.000Z",
+                          },
+                        },
+
+                        {
+                          category: {
+                            _id: "6852b4d04ef5f2e4dbd0d102",
+
+                            categoryCode: "CAT-002",
+
+                            categoryName: "Lunch",
+
+                            status: "active",
+
+                            day: "Day 1",
+
+                            hall: "Dining Hall",
+
+                            session: "Lunch",
+
+                            time: "01:00 PM",
+
+                            groupCategory: {
+                              _id: "6852b4d04ef5f2e4dbd0d202",
+
+                              groupCategoryName: "Food",
+
+                              description: "Food related categories",
+                            },
+                          },
+
+                          privilege: {
+                            _id: "6852b4d04ef5f2e4dbd0d302",
+
+                            isAllowed: true,
+                          },
+
+                          scan: {
+                            _id: null,
+
+                            isScanned: false,
+
+                            scannedAt: null,
+
+                            createdAt: null,
+
+                            updatedAt: null,
+                          },
+                        },
+                      ],
+
+                      createdAt: "2026-09-15T10:00:00.000Z",
+
+                      updatedAt: "2026-09-16T10:00:00.000Z",
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+
+        // ==========================================
+        // 400 - Bad Request
+        // ==========================================
+
+        400: badRequest400,
+
+        // ==========================================
+        // 401 - Unauthorized
+        // ==========================================
+
+        401: unauthorized401,
+
+        // ==========================================
+        // 403 - Forbidden
+        // ==========================================
+
+        403: forbidden403,
+
+        // ==========================================
+        // 404 - Not Found
+        // ==========================================
+
+        404: notFound404,
+
+        // ==========================================
+        // 500 - Internal Server Error
+        // ==========================================
+
+        500: internalServer500,
+      },
+    },
+  },
+
   // ==========================================
   // Get / Update / Delete By ID
   // ==========================================
