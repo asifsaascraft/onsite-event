@@ -42,7 +42,6 @@ router.post(
 router.get(
   "/",
   protect,
-  authorize("admin"),
   getEvents,
 );
 
@@ -52,7 +51,6 @@ router.get(
 router.get(
   "/:id",
   protect,
-  authorize("admin"),
   getEventById,
 );
 
