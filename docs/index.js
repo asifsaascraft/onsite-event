@@ -9,6 +9,7 @@ import privilegePaths from "./privilege.swagger.js";
 import registrationDataPaths from "./registrationData.swagger.js";
 import registrationScanPaths from "./registrationScan.swagger.js";
 import dashboardPaths from "./dashboard.swagger.js";
+import badgeTemplatePaths from "./badgeTemplate.swagger.js";
 
 
 const paths = {
@@ -23,6 +24,7 @@ const paths = {
   ...registrationDataPaths,
   ...registrationScanPaths,
   ...dashboardPaths,
+  ...badgeTemplatePaths,
 };
 
 export default paths;

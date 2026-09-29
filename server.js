@@ -25,6 +25,7 @@ import privilegeRoutes from "./routes/privilegeRoutes.js";
 import registrationDataRoutes from "./routes/registrationDataRoutes.js";
 import registrationScanRoutes from "./routes/registrationScanRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import badgeTemplateRoutes from "./routes/badgeTemplateRoutes.js";
 
 
 // Connect Database
@@ -131,6 +132,8 @@ app.use("/api", privilegeRoutes);
 app.use("/api", registrationDataRoutes);
 app.use("/api", registrationScanRoutes);
 app.use("/api", dashboardRoutes);
+app.use("/api", badgeTemplateRoutes);
+
 
 // 404 Route
 app.use((req, res) => {
